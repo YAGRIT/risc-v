@@ -178,6 +178,8 @@ module csr (
     };
 
     always_comb begin
+        logic is_recognized_cause;
+
         mie_next = mie;
         mpie_next = mpie;
 
@@ -211,10 +213,26 @@ module csr (
             CSR_MSCRATCH: mscratch_next = wd;
             CSR_MEPC: mepc_next = {wd[31:2], 2'b00};
 
-            CSR_MCAUSE:
-            if (mcause_t'({wd[31], wd[3:0]}) inside {recognized_causes} && wd[30:4] == 0) begin
-                mcause_next = mcause_t'(wd);
+            CSR_MCAUSE: begin
+                is_recognized_cause = (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[0]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[1]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[2]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[3]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[4]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[5]) ||   
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[6]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[7]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[8]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[9]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[10]) ||
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[11]) ||   
+                                    (mcause_t'({wd[31], wd[3:0]}) == recognized_causes[12]);
+
+                if (is_recognized_cause && wd[30:4] == 0) begin
+                    mcause_next = mcause_t'(wd);
+                end
             end
+
 
             CSR_MTVAL: mtval_next = wd;
 

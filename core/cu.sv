@@ -81,7 +81,7 @@ module cu (
         .DATA_WIDTH(2),
         .SELECTOR_WIDTH(1)
     ) mie_next_sel_mux (
-        .in ('{mie_next_sel_instr, 2'b01}),
+        .in ({mie_next_sel_instr, 2'b01}),
         .sel(trapped),
         .out(mie_next_sel)
     );
@@ -357,7 +357,7 @@ module instr_decoder (
                         instr_type  = INSTR_TYPE_I;
                         reg_control = {1'b1, 2'b01};
 
-                        unique case (funct3) inside
+                        unique case (funct3)
                             3'b000, 3'b100: begin  // LB (U)
                                 {mem_re, mem_zero_extend, mem_rd_unit} = {1'b1, funct3[2], 2'b00};
                             end
@@ -544,9 +544,14 @@ module csr_decoder (
         mcycle_we = 1'b0;
         minstret_we = 1'b0;
 
-        ro = csr_id inside {CSR_MVENDORID, CSR_MARCHID, CSR_MIMPID, CSR_MHARTID};
-        mcycle_we = csr_id inside {CSR_MCYCLE, CSR_MCYCLEH};
-        minstret_we = csr_id inside {CSR_MINSTRET, CSR_MINSTRETH};
+        ro = (csr_id == CSR_MVENDORID) || 
+        (csr_id == CSR_MARCHID) || 
+        (csr_id == CSR_MIMPID) || 
+        (csr_id == CSR_MHARTID);
+
+        mcycle_we = (csr_id == CSR_MCYCLE) || (csr_id == CSR_MCYCLEH);
+        minstret_we = (csr_id == CSR_MINSTRET) || (csr_id == CSR_MINSTRETH);
+
     end
 
 endmodule
